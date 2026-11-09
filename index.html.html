@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="30 seconds NBO 1">
+<title>30 seconds NBO 1</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#E4EAE1; --card:#F7F9F5; --ink:#17261B; --muted:#55645A; --line:#B9C5B8;
+  --green:#2F5D3A; --on-green:#F7F9F5; --hi:#F2C230; --on-hi:#1B1A10; --ok:#2F7A45; --bad:#A23B2A;
+  color-scheme:light;
+  box-sizing:border-box; padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#101A13; --card:#1A2A1F; --ink:#E8EFE6; --muted:#9DB0A1; --line:#34493A;
+    --green:#7FBF8E; --on-green:#0F1A12; --hi:#F2C230; --on-hi:#1B1A10; --ok:#7FBF8E; --bad:#E58A78; color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#101A13; --card:#1A2A1F; --ink:#E8EFE6; --muted:#9DB0A1; --line:#34493A;
+  --green:#7FBF8E; --on-green:#0F1A12; --hi:#F2C230; --on-hi:#1B1A10; --ok:#7FBF8E; --bad:#E58A78; color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;background:var(--bg);color:var(--ink);font-family:"Bricolage Grotesque",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);background:var(--bg);z-index:10}
+#app{max-width:480px;margin:0 auto;padding:20px 18px 32px;min-height:100vh;display:flex;flex-direction:column;gap:16px}
+h1{font-size:2.1rem;line-height:1.05;margin:8px 0 0;font-weight:800;letter-spacing:-.02em}
+h2{font-size:1.25rem;margin:0;font-weight:800}
+p{margin:0;line-height:1.45}
+.muted{color:var(--muted)}
+.rules{background:var(--card);border:2px solid var(--line);border-radius:14px;padding:14px 16px;display:grid;gap:8px;font-size:.98rem}
+button{font:inherit;cursor:pointer;border:0;border-radius:14px;padding:16px 18px;font-weight:800;font-size:1.1rem;background:var(--green);color:var(--on-green);min-height:56px}
+button.hi{background:var(--hi);color:var(--on-hi)}
+button.ghost{background:transparent;color:var(--ink);border:2px solid var(--line)}
+button:focus-visible{outline:3px solid var(--hi);outline-offset:2px}
+.top{display:flex;justify-content:space-between;align-items:baseline;gap:12px}
+.timer{font-size:5.5rem;font-weight:800;line-height:1;letter-spacing:-.04em;font-variant-numeric:tabular-nums}
+.timer.low{color:var(--bad)}
+.bar{height:12px;border-radius:6px;background:var(--line);overflow:hidden}
+.bar>i{display:block;height:100%;width:100%;background:var(--hi);transform-origin:left;transition:transform .25s linear}
+.terms{display:grid;gap:10px}
+.term{display:flex;align-items:center;justify-content:space-between;gap:12px;text-align:left;background:var(--card);color:var(--ink);border:2px solid var(--line);font-size:1.35rem;min-height:64px}
+.term .mark{flex:none;width:30px;height:30px;border-radius:50%;border:2px solid var(--line);display:grid;place-items:center;font-size:1rem}
+.term.got{border-color:var(--ok);}
+.term.got span:first-child{text-decoration:line-through;text-decoration-thickness:2px;color:var(--muted)}
+.term.got .mark{background:var(--ok);border-color:var(--ok);color:var(--card)}
+.center{text-align:center;display:grid;gap:14px;margin:auto 0}
+.big{font-size:4rem;font-weight:800;line-height:1}
+.miss{background:var(--card);border:2px solid var(--line);border-radius:14px;padding:14px 16px;display:grid;gap:10px}
+.miss ul{margin:0;padding-left:1.1rem;display:grid;gap:2px}
+.miss h3{margin:0;font-size:1rem}
+.spacer{flex:1}
+@media (prefers-reduced-motion:reduce){.bar>i{transition:none}}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script>
+var W="Werkbegrippen",E="Elementen",S="Soorten";
+var CARDS=[
+ [["Gedragscode",W],["Habitat",W],["Steilwand",E],["Minimale maaihoogte",W],["Huismus",S]],
+ [["Biotoop",W],["Roofvogelnest",E],["Vluchtroute",W],["Zorgplicht",W],["Egel",S]],
+ [["Winterverblijf",W],["Boomholte",E],["Rugstreeppad",S],["Verstoring",W],["Beschermingszone",W]],
+ [["Snoeihout",W],["Kwetsbare periode",W],["Buizerd",S],["Rustplaats",W],["Mierenhoop",E]],
+ [["Lijnvormige beplanting",E],["Insporing",W],["Gefaseerd werken",W],["Leefgebied",W],["Das",S]],
+ [["Gewone dwergvleermuis",S],["Natuurvriendelijke oever",W],["Werkrichting",W],["Takkenril",E],["Kolonienest",E]],
+ [["Burcht",E],["Steenuil",S],["Rottingsgat",E],["Functionaliteit",W],["Strooisellaag",W]],
+ [["Spleten en kieren",E],["Broeihoop",E],["Broedseizoen",W],["Groene glazenmaker",S],["Verbinding",W]],
+ [["Boommarter",S],["Eekhoornnest",E],["Velrichting",W],["Schubvaren",S],["Waardplant",W]],
+ [["Voortplantingsplaats",W],["Rosse vleermuis",S],["Gewenning",W],["Ringslang",S],["Liggend zwaar dood hout",E]]
+];
+var SECONDS=30, st={}, timer=null, app=document.getElementById("app");
+
+function shuffle(a){a=a.slice();for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=a[i];a[i]=a[j];a[j]=t}return a}
+function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
+function newGame(){
+  st={phase:"ready",i:0,left:SECONDS,
+      order:shuffle(CARDS.map(function(_,i){return i})).map(function(k){return shuffle(CARDS[k])}),
+      got:{}};
+  render();
+}
+function score(){var n=0;for(var k in st.got)if(st.got[k])n++;return n}
+function key(i,j){return i+"-"+j}
+function startCard(){
+  st.phase="play";st.left=SECONDS;st.t0=Date.now();render();
+  clearInterval(timer);
+  timer=setInterval(function(){
+    var left=Math.max(0,SECONDS-Math.floor((Date.now()-st.t0)/1000));
+    var exact=Math.max(0,SECONDS-(Date.now()-st.t0)/1000);
+    st.left=left;
+    var t=document.getElementById("t"),b=document.getElementById("b");
+    if(t){t.textContent=left;t.className="timer"+(left<=5?" low":"")}
+    if(b)b.style.transform="scaleX("+(exact/SECONDS)+")";
+    if(left<=0)endCard();
+  },200);
+}
+function endCard(){
+  clearInterval(timer);
+  if(st.phase!=="play")return;
+  st.phase="after";
+  try{if(navigator.vibrate)navigator.vibrate([200,80,200])}catch(e){}
+  try{
+    var C=window.AudioContext||window.webkitAudioContext,c=new C(),o=c.createOscillator(),g=c.createGain();
+    o.connect(g);g.connect(c.destination);o.frequency.value=660;g.gain.value=.15;o.start();o.stop(c.currentTime+.35);
+  }catch(e){}
+  render();
+}
+function toggle(j){
+  var k=key(st.i,j);st.got[k]=!st.got[k];
+  var el=document.querySelector('[data-j="'+j+'"]');
+  if(el){el.classList.toggle("got",!!st.got[k]);el.setAttribute("aria-pressed",!!st.got[k]);
+    var sc=document.getElementById("sc");if(sc)sc.textContent=score()+" geraden"}
+}
+function next(){
+  if(st.i>=CARDS.length-1){st.phase="done"}else{st.i++;st.phase="ready"}
+  render();window.scrollTo(0,0);
+}
+function termsHtml(){
+  return '<div class="terms">'+st.order[st.i].map(function(t,j){
+    var on=!!st.got[key(st.i,j)];
+    return '<button class="term'+(on?" got":"")+'" data-j="'+j+'" aria-pressed="'+on+'" onclick="toggle('+j+')"><span>'+esc(t[0])+'</span><span class="mark" aria-hidden="true">'+(on?"✓":"")+'</span></button>';
+  }).join("")+'</div>';
+}
+function render(){
+  var h="";
+  if(st.phase===undefined||!st.phase){
+    h='<div class="spacer"></div><h1>30 seconds<br>natuurbescherming</h1>'+
+      '<p class="muted">NBO 1: herkennen van soorten en elementen, en werken volgens de gedragscode.</p>'+
+      '<div class="rules"><p><b>Zo werkt het</b></p>'+
+      '<p>Eén uitlegger per kaart, de rest van het team raadt. Je krijgt 5 begrippen en 30 seconden.</p>'+
+      '<p>Gebruik het woord zelf, delen ervan of “rijmt op” niet. Je mag wel zeggen waar het dier woont, hoe het nest eruitziet en wanneer het kwetsbaar is.</p>'+
+      '<p>Tik begrippen aan als ze geraden zijn. Er zijn 10 kaarten, dus 50 begrippen.</p></div>'+
+      '<button class="hi" onclick="newGame()">Nieuw spel</button><div class="spacer"></div>';
+  }else if(st.phase==="ready"){
+    h='<div class="top"><h2>Kaart '+(st.i+1)+' van '+CARDS.length+'</h2><span class="muted">'+score()+' geraden</span></div>'+
+      '<div class="center"><p class="big" aria-hidden="true">'+(st.i+1)+'</p>'+
+      '<p>Geef de telefoon aan de uitlegger.<br>De anderen kijken niet mee.</p></div>'+
+      '<button class="hi" onclick="startCard()">Toon kaart en start</button>';
+  }else if(st.phase==="play"){
+    h='<div class="top"><h2>Kaart '+(st.i+1)+' van '+CARDS.length+'</h2><span class="muted" id="sc">'+score()+' geraden</span></div>'+
+      '<div class="timer" id="t" aria-live="off">'+st.left+'</div><div class="bar"><i id="b"></i></div>'+
+      termsHtml()+'<button class="ghost" onclick="endCard()">Klaar, alles geraden</button>';
+  }else if(st.phase==="after"){
+    h='<div class="top"><h2>Tijd is om</h2><span class="muted" id="sc">'+score()+' geraden</span></div>'+
+      '<p>Tik aan wat het team heeft geraden.</p>'+termsHtml()+
+      '<button class="hi" onclick="next()">'+(st.i>=CARDS.length-1?"Bekijk uitslag":"Volgende kaart")+'</button>';
+  }else if(st.phase==="done"){
+    var miss={};miss[S]=[];miss[E]=[];miss[W]=[];
+    st.order.forEach(function(card,i){card.forEach(function(t,j){if(!st.got[key(i,j)])miss[t[1]].push(t[0])})});
+    var total=CARDS.length*5, m=total-score();
+    h='<div class="center"><p class="muted">Uitslag</p><p class="big">'+score()+' / '+total+'</p></div>';
+    if(m===0){h+='<p>Alles geraden.</p>'}
+    else{
+      h+='<div class="miss"><h2>Nog niet geraden ('+m+')</h2><p class="muted">Bespreek deze begrippen na in de groep.</p>';
+      [W,E,S].forEach(function(k){if(miss[k].length)h+='<div><h3>'+k+'</h3><ul>'+miss[k].sort().map(function(x){return '<li>'+esc(x)+'</li>'}).join("")+'</ul></div>'});
+      h+='</div>';
+    }
+    h+='<button class="hi" onclick="newGame()">Opnieuw spelen</button>';
+  }
+  app.innerHTML=h;
+}
+render();
+</script>
+</body>
+</html>
